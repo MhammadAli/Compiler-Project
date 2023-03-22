@@ -8,7 +8,7 @@ statement :State #statement_state
 
 
 WS: [ \n\r]+ -> skip;
-State: [a-zA-Z0-9];
+State: [a-zA-Z];
 INT : [0-9];
 
 variable : State | INT;
