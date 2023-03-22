@@ -15,10 +15,8 @@ variable : State | INT;
 openCurlybraces: '{';
 endCurlybraces: '}';
 
-compare : '==';
-lessThan : '>';
-moreThan : '<';
-operater : compare | lessThan | moreThan;
+
+operater : '==' | '>' | '<' | '>=' | '<=' | '!=';
 
 openRoundbraces: '(';
 endRoundbraces: ')';
