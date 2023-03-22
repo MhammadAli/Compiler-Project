@@ -8,7 +8,7 @@ statement :State #statement_state
 
 lineStartAndEnd : State;
 
-WS: [\n\t\r]+ -> skip;
+WS: [ \n\t\r]+ -> skip;
 State: [a-zA-Z0-9];
 openCurlybraces: '{';
 endCurlybraces: '}';
