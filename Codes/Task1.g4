@@ -1,14 +1,27 @@
 grammar Task1;
 
-block: (lineStartAndEnd)* openCurlybraces (statement)* endCurlybraces (lineStartAndEnd)*;
+block: experssion ((openCurlybraces (statement)*)* endCurlybraces)* (block)*;
 
 
 statement :State #statement_state
             |block #statement_block;
 
-lineStartAndEnd : State;
 
-WS: [ \n\t\r]+ -> skip;
+WS: [ \n\r]+ -> skip;
 State: [a-zA-Z0-9];
+INT : [0-9];
+
+variable : State | INT;
 openCurlybraces: '{';
 endCurlybraces: '}';
+
+compare : '==';
+lessThan : '>';
+moreThan : '<';
+operater : compare | lessThan | moreThan;
+
+openRoundbraces: '(';
+endRoundbraces: ')';
+semiColon : ';';
+
+experssion : (State)+ (openRoundbraces ((variable operater variable)|(variable))* endRoundbraces)* (semiColon)*;
