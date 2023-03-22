@@ -1,19 +1,12 @@
 public class MyTaskListener extends Task1BaseListener{
-    static int blockCounter = 0;
+    static int blockCounter = 1;
     static String result = "";
-
-    @Override
-    public void enterLineStartAndEnd(Task1Parser.LineStartAndEndContext ctx) {
-        super.enterLineStartAndEnd(ctx);
-        System.out.print(ctx.getText());
-        result += ctx.getText();
-    }
 
     @Override
     public void enterOpenCurlybraces(Task1Parser.OpenCurlybracesContext ctx) {
         super.enterOpenCurlybraces(ctx);
-        System.out.println("{\n// Block no."+blockCounter++);
-        result += "{ Block no."+blockCounter;
+        System.out.println("{// Block no."+blockCounter++);
+        result += "{ Block no."+blockCounter+'\n';
     }
 
     @Override
@@ -27,6 +20,13 @@ public class MyTaskListener extends Task1BaseListener{
     public void enterEndCurlybraces(Task1Parser.EndCurlybracesContext ctx) {
         super.enterEndCurlybraces(ctx);
         System.out.println(ctx.getText());
+        result += ctx.getText();
+    }
+
+    @Override
+    public void enterSentence(Task1Parser.SentenceContext ctx) {
+        super.enterSentence(ctx);
+        System.out.print(ctx.getText());
         result += ctx.getText();
     }
 }
