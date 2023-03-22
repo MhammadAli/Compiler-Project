@@ -24,9 +24,9 @@ public class MyTaskListener extends Task1BaseListener{
     }
 
     @Override
-    public void enterSentence(Task1Parser.SentenceContext ctx) {
-        super.enterSentence(ctx);
-        System.out.print(ctx.getText());
+    public void enterExperssion(Task1Parser.ExperssionContext ctx) {
+        super.enterExperssion(ctx);
+        System.out.println(ctx.getText());
         result += ctx.getText();
     }
 }
