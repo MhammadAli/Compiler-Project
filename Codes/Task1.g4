@@ -1,11 +1,12 @@
-grammar Task1 ;
+grammar Task1;
+
+block: (lineStartAndEnd)* openCurlybraces (statement)* endCurlybraces (lineStartAndEnd)*;
 
 
-block: openCurlybraces (statement)* endCurlybraces;
+statement :State #statement_state
+            |block #statement_block;
 
-
-statement :State # statementState
-            |block # statementBlock;
+lineStartAndEnd : State;
 
 WS: [\n\t\r]+ -> skip;
 State: [a-zA-Z0-9];
