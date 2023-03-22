@@ -1,0 +1,3 @@
+if(x==true){ Block no.0
+if(z==false){ Block no.1
+print(1)}}
