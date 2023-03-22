@@ -10,7 +10,7 @@ public class Main {
 //        String s = "{if{startIf}else{StartElse}}"; // {b0if{b1startIf}else{b2StartElse}}
 
         // open file
-        File file = new File("tt.txt");
+        File file = new File("test_text.txt");
         FileInputStream fis = new FileInputStream(file);
         FileOutputStream fos = new FileOutputStream("result.txt");
         FileWriter fileWriter = new FileWriter("result.txt");
