@@ -5,8 +5,9 @@ public class MyTaskListener extends Task1BaseListener{
     @Override
     public void enterOpenCurlybraces(Task1Parser.OpenCurlybracesContext ctx) {
         super.enterOpenCurlybraces(ctx);
-        System.out.println("{// Block no."+blockCounter++);
+        System.out.println("{// Block no."+blockCounter);
         result += "{ Block no."+blockCounter+'\n';
+        blockCounter++;
     }
 
     @Override
