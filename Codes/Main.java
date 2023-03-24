@@ -2,6 +2,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStreamRewriter;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.*;
@@ -28,9 +29,11 @@ public class Main {
         ParseTreeWalker walker = new ParseTreeWalker();
         TokenStreamRewriter rewriter = new TokenStreamRewriter(tokens);
         // Walk the tree created during the parse, trigger callbacks
-        
         walker.walk(new MyTaskListener(rewriter), tree);
-        fileWriter.write(rewriter.getText);
+        MyTaskVisitor myTaskVisitor = new MyTaskVisitor(rewriter);
+        myTaskVisitor.visit(tree);
+
+        fileWriter.write(rewriter.getText());
         fileWriter.close();
         System.out.println(); // print a \n after translation
     }

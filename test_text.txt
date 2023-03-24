@@ -1,5 +1,11 @@
-if(x==true){
-	if(z==false){
-		print(1)
-	}
+public class Main {
+    public static void main(String[] args) throws Exception{
+       if( x == true ) {
+           if (z  == false){
+           print();
+           }
+       }
+       int x = 4, y = 5;
+       int z = 10;
+    }
 }

@@ -1,8 +1,12 @@
 import org.antlr.v4.runtime.TokenStreamRewriter;
 
-public class MyTaskListener extends JavaParserBaseListener{
+import java.util.HashMap;
+import java.util.Map;
+
+public class MyTaskListener  extends JavaParserBaseListener{
     static int blockCounter = 1;
     static String result = "";
+    Map<String, Integer> mpIntVars = new HashMap<String, Integer>();
     TokenStreamRewriter rewriter;
 
     public MyTaskListener(TokenStreamRewriter rewriter) {
@@ -13,11 +17,27 @@ public class MyTaskListener extends JavaParserBaseListener{
     public void enterBlock(JavaParser.BlockContext ctx) {
         rewriter.insertAfter(ctx.getStart(), "//Block no. " + blockCounter++ + "\n");
     }
-    
+
+    @Override
+    public void enterVariableDeclarator(JavaParser.VariableDeclaratorContext ctx) {
+        String identifier = ctx.variableDeclaratorId().getText();
+        Integer value = Integer.valueOf(ctx.variableInitializer().getText());
 
 
+        mpIntVars.put(identifier,value);
 
-/*
+    }
+
+
+    @Override
+    public void exitCompilationUnit(JavaParser.CompilationUnitContext ctx) {
+        // test variables declarations
+        for (Map.Entry<String, Integer> entry : mpIntVars.entrySet()) {
+            System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+        }
+    }
+
+    /*
 @Override
 public void enterOpenCurlybraces(Task1Parser.OpenCurlybracesContext ctx) {
     super.enterOpenCurlybraces(ctx);
