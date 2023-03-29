@@ -1,70 +1,56 @@
 import org.antlr.v4.runtime.TokenStreamRewriter;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
+import java.io.FileWriter;
 
-public class MyTaskListener  extends JavaParserBaseListener{
-    static int blockCounter = 1;
-    static String result = "";
-    Map<String, Integer> mpIntVars = new HashMap<String, Integer>();
+public class MyTaskListener extends JavaParserBaseListener {
+    int counter;
     TokenStreamRewriter rewriter;
 
     public MyTaskListener(TokenStreamRewriter rewriter) {
         this.rewriter = rewriter;
+        this.counter = 0;
+    }
+
+    @Override
+    public void enterCompilationUnit(JavaParser.CompilationUnitContext ctx) {
+        String imports = """
+                import java.io.*;
+                import java.util.*;
+                """;
+        rewriter.insertBefore(ctx.start,imports);
+        super.enterCompilationUnit(ctx);
     }
 
     @Override
     public void enterBlock(JavaParser.BlockContext ctx) {
-        rewriter.insertAfter(ctx.getStart(), "//Block no. " + blockCounter++ + "\n");
-    }
+        this.counter++;
+        rewriter.insertAfter(ctx.getStart(), "//block number " + this.counter + "\n");//write after {
+        if (counter == 1) {//in main
+            rewriter.insertBefore(ctx.getStart(),"throws Exception ");
+            rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "File output = new File(\"output.txt\");" + "\n");
+            rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "output.createNewFile();" + "\n");
+            rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "FileWriter w = new FileWriter(\"output.txt\");" + "\n");
+            rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "w.write(\"block " + this.counter + " is Visited \" +\"\\n\");" + "\n");
 
-    @Override
-    public void enterVariableDeclarator(JavaParser.VariableDeclaratorContext ctx) {
-        String identifier = ctx.variableDeclaratorId().getText();
-        Integer value = Integer.valueOf(ctx.variableInitializer().getText());
-
-
-        mpIntVars.put(identifier,value);
-
-    }
-
-
-    @Override
-    public void exitCompilationUnit(JavaParser.CompilationUnitContext ctx) {
-        // test variables declarations
-        for (Map.Entry<String, Integer> entry : mpIntVars.entrySet()) {
-            System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+            rewriter.insertBefore(ctx.getStop(), "w.close();" + "\n");//the last }
+        } else {
+            rewriter.insertBefore(ctx.getStop(), "w.write(\"block " + this.counter + " is Visited\" +\"\\n\");" + "\n");
         }
+
     }
 
-    /*
-@Override
-public void enterOpenCurlybraces(Task1Parser.OpenCurlybracesContext ctx) {
-    super.enterOpenCurlybraces(ctx);
-    System.out.println("{// Block no."+blockCounter);
-    result += "{ Block no."+blockCounter+'\n';
-    blockCounter++;
-}
+    @Override
+    public void exitIfExpression(JavaParser.IfExpressionContext ctx) {
+        super.exitIfExpression(ctx);
+        counter++;
+    }
 
-@Override
-    public void enterStatement_state(Task1Parser.Statement_stateContext ctx) {
-        super.enterStatement_state(ctx);
-        System.out.print(ctx.getText());
-        result += ctx.getText();
-    }
-    
     @Override
-    public void enterEndCurlybraces(Task1Parser.EndCurlybracesContext ctx) {
-        super.enterEndCurlybraces(ctx);
-        System.out.println(ctx.getText());
-        result += ctx.getText();
+    public void enterStatement(JavaParser.StatementContext ctx) {
+        super.exitStatement(ctx);
+        if (ctx.elso != null)
+            counter++;
     }
-    
-    @Override
-    public void enterExperssion(Task1Parser.ExperssionContext ctx) {
-        super.enterExperssion(ctx);
-        System.out.println(ctx.getText());
-        result += ctx.getText();
-    }
-    */
 }
