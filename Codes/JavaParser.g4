@@ -6,7 +6,8 @@
  Copyright (c) 2022 Michał Lorek (upgrade to Java 17)
  All rights reserved.
 
- Redistribution and use in source and binary forms, with or without
+ Redistribution and use in source and binary
+ ms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
@@ -313,7 +314,7 @@ literal
     | CHAR_LITERAL
     | STRING_LITERAL
     | BOOL_LITERAL
-     | NULL_LITERAL
+    | NULL_LITERAL
     | TEXT_BLOCK // Java17
     ;
 
@@ -446,12 +447,7 @@ recordBody
 
 block
     : '{' blockStatement* '}'
-//     | IF parExpression statement
-//     | ELSE statement
-//     | FOR '(' forControl ')' statement
-//     | WHILE parExpression statement
     ;
-
 
 blockStatement
     : localVariableDeclaration ';'
@@ -504,12 +500,10 @@ localTypeDeclaration
       (classDeclaration | interfaceDeclaration | recordDeclaration)
     ;
 
-
-
 statement
     : blockLabel=block
     | ASSERT expression (':' expression)? ';'
-    | IF parExpression statement (ELSE statement)?
+    | IF parExpression statement ( elso = ELSE statement)?
     | FOR '(' forControl ')' statement
     | WHILE parExpression statement
     | DO statement WHILE parExpression ';'
@@ -582,7 +576,7 @@ enhancedForControl
 // EXPRESSIONS
 
 parExpression
-    : '(' expression ')'
+    : '(' expression ')' #ifExpression
     ;
 
 expressionList
