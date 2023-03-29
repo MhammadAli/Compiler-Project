@@ -1,40 +1,26 @@
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.TokenStreamRewriter;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
 
 import java.io.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-//        String s = "{if{startIf}else{StartElse}}"; // {b0if{b1startIf}else{b2StartElse}}
-
-        // open file
-        File file = new File("test_text.txt");
-        FileInputStream fis = new FileInputStream(file);
-        FileOutputStream fos = new FileOutputStream("result.txt");
-        FileWriter fileWriter = new FileWriter("result.txt");
-        // create a CharStream that reads from standard input
-        ANTLRInputStream input = new ANTLRInputStream(fis);
-        // create a lexer that feeds off of input CharStream
+    public static void main(String[] args) throws Exception {
+        int[] Array;
+        String inputFile = "input.java";
+        FileInputStream inputStream = new FileInputStream(inputFile);
+        ANTLRInputStream input = new ANTLRInputStream(inputStream);
         JavaLexer lexer = new JavaLexer(input);
-        // create a buffer of tokens pulled from the lexer
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        // create a parser that feeds off the tokens buffer
         JavaParser parser = new JavaParser(tokens);
-        ParseTree tree = parser.compilationUnit(); // begin parsing at init rule
-        // Create a generic parse tree walker that can trigger callbacks
+        ParseTree tree = parser.compilationUnit();
         ParseTreeWalker walker = new ParseTreeWalker();
         TokenStreamRewriter rewriter = new TokenStreamRewriter(tokens);
-        // Walk the tree created during the parse, trigger callbacks
         walker.walk(new MyTaskListener(rewriter), tree);
-        MyTaskVisitor myTaskVisitor = new MyTaskVisitor(rewriter);
-        myTaskVisitor.visit(tree);
 
-        fileWriter.write(rewriter.getText());
-        fileWriter.close();
-        System.out.println(); // print a \n after translation
+        File output = new File("output.java");
+        output.createNewFile();
+        FileWriter w = new FileWriter("output.java");
+        w.write(rewriter.getText());
+        w.close();
     }
 }
