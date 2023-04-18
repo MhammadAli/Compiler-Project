@@ -1,11 +1,9 @@
 import org.antlr.v4.runtime.TokenStreamRewriter;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
-import java.io.File;
-import java.io.FileWriter;
 
 public class MyTaskListener extends JavaParserBaseListener {
     int counter;
+    boolean isMain = false;
+    int arrayCounter;
     TokenStreamRewriter rewriter;
 
     public MyTaskListener(TokenStreamRewriter rewriter) {
@@ -16,41 +14,96 @@ public class MyTaskListener extends JavaParserBaseListener {
     @Override
     public void enterCompilationUnit(JavaParser.CompilationUnitContext ctx) {
         String imports = """
+                package outputs;
                 import java.io.*;
                 import java.util.*;
                 """;
-        rewriter.insertBefore(ctx.start,imports);
+        rewriter.insertBefore(ctx.start, imports);
         super.enterCompilationUnit(ctx);
     }
 
     @Override
-    public void enterBlock(JavaParser.BlockContext ctx) {
-        this.counter++;
-        rewriter.insertAfter(ctx.getStart(), "//block number " + this.counter + "\n");//write after {
-        if (counter == 1) {//in main
-            rewriter.insertBefore(ctx.getStart(),"throws Exception ");
+    public void enterClassBody(JavaParser.ClassBodyContext ctx) {
+        super.enterClassBody(ctx);
+        rewriter.insertAfter(ctx.start, "\nstatic int [] arr = new int[8];");
+    }
+
+
+    @Override
+    public void enterIfStatement(JavaParser.IfStatementContext ctx) {
+        super.enterIfStatement(ctx);
+        rewriter.insertAfter(ctx.parExpression().stop, "{");
+        counter++;
+        rewriter.insertAfter(ctx.statement().stop, "\narr[" + arrayCounter++ + "] = " + counter + ";");
+        rewriter.insertAfter(ctx.statement().stop, "\n}");
+
+
+    }
+
+
+    @Override
+    public void enterElseStatement(JavaParser.ElseStatementContext ctx) {
+        super.enterElseStatement(ctx);
+        rewriter.insertAfter(ctx.start, "{");
+        counter++;
+        rewriter.insertAfter(ctx.statement().stop, "\narr[" + arrayCounter++ + "] = " + counter + ";");
+        rewriter.insertAfter(ctx.statement().stop, "\n}");
+
+    }
+
+    @Override
+    public void enterElseIfStatement(JavaParser.ElseIfStatementContext ctx) {
+        super.enterElseIfStatement(ctx);
+        rewriter.insertAfter(ctx.parExpression().stop, "{");
+        counter++;
+        rewriter.insertAfter(ctx.statement().stop, "\narr[" + arrayCounter++ + "] = " + counter + ";");
+        rewriter.insertAfter(ctx.statement().stop, "\n}");
+    }
+
+    @Override
+    public void enterForStatement(JavaParser.ForStatementContext ctx) {
+        super.enterForStatement(ctx);
+        counter++;
+        rewriter.insertBefore(ctx.statement().start, "{");
+        rewriter.insertAfter(ctx.statement().stop, "\narr[" + arrayCounter++ + "] = " + counter + ";");
+        rewriter.insertAfter(ctx.statement().stop, "\n}");
+    }
+
+
+    @Override
+    public void enterWhileStatement(JavaParser.WhileStatementContext ctx) {
+        super.enterWhileStatement(ctx);
+        counter++;
+        rewriter.insertAfter(ctx.parExpression().stop, "{");
+        rewriter.insertAfter(ctx.statement().stop, "\narr[" + arrayCounter++ + "] = " + counter + ";");
+        rewriter.insertAfter(ctx.statement().stop, "\n}");
+    }
+
+
+    @Override
+    public void enterMethodDeclaration(JavaParser.MethodDeclarationContext ctx) {
+        super.enterMethodDeclaration(ctx);
+        counter++;
+        if (ctx.identifier().IDENTIFIER().getText().equals("main")) {
+            isMain = true;
+
+        }
+    }
+
+    @Override
+    public void enterMethodBody(JavaParser.MethodBodyContext ctx) {
+        super.enterMethodBody(ctx);
+        if (isMain) {
+            rewriter.insertBefore(ctx.getStart(), "throws Exception ");
             rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "File output = new File(\"output.txt\");" + "\n");
             rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "output.createNewFile();" + "\n");
             rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "FileWriter w = new FileWriter(\"output.txt\");" + "\n");
-            rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "w.write(\"block " + this.counter + " is Visited \" +\"\\n\");" + "\n");
 
-            rewriter.insertBefore(ctx.getStop(), "w.close();" + "\n");//the last }
+            rewriter.insertBefore(ctx.getStop(), "w.close();" + "\n");//the last
+            rewriter.insertBefore(ctx.getStop(), "w.write(Arrays.toString(arr));" + "\n");
+            isMain = false;
         } else {
-            rewriter.insertBefore(ctx.getStop(), "w.write(\"block " + this.counter + " is Visited\" +\"\\n\");" + "\n");
+            rewriter.insertAfter(ctx.start, "\narr[" + arrayCounter++ + "] = " + counter + ";");
         }
-
-    }
-
-    @Override
-    public void exitIfExpression(JavaParser.IfExpressionContext ctx) {
-        super.exitIfExpression(ctx);
-        counter++;
-    }
-
-    @Override
-    public void enterStatement(JavaParser.StatementContext ctx) {
-        super.exitStatement(ctx);
-        if (ctx.elso != null)
-            counter++;
     }
 }
