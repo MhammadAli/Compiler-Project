@@ -499,17 +499,22 @@ localTypeDeclaration
     : classOrInterfaceModifier*
       (classDeclaration | interfaceDeclaration | recordDeclaration)
     ;
-
+ifStatement : IF parExpression statement elseIfStatement? elseStatement? ;
+elseStatement:(ELSE statement) ;
+elseIfStatement:   ELSE IF parExpression statement ;
+whileStatement: WHILE parExpression statement;
+forStatement: FOR '(' forControl ')' statement ;
+switchStatement: SWITCH parExpression '{' switchBlockStatementGroup* switchLabel* '}';
 statement
     : blockLabel=block
     | ASSERT expression (':' expression)? ';'
-    | IF parExpression statement ( elso = ELSE statement)?
-    | FOR '(' forControl ')' statement
-    | WHILE parExpression statement
+    | ifStatement
+    | forStatement
+    | whileStatement
     | DO statement WHILE parExpression ';'
     | TRY block (catchClause+ finallyBlock? | finallyBlock)
     | TRY resourceSpecification block catchClause* finallyBlock?
-    | SWITCH parExpression '{' switchBlockStatementGroup* switchLabel* '}'
+    | switchStatement
     | SYNCHRONIZED parExpression block
     | RETURN expression? ';'
     | THROW expression ';'
@@ -576,7 +581,7 @@ enhancedForControl
 // EXPRESSIONS
 
 parExpression
-    : '(' expression ')' #ifExpression
+    : '(' expression ')'
     ;
 
 expressionList
