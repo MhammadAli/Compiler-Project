@@ -68,8 +68,6 @@ public class HTMLListener extends JavaParserBaseListener {
     @Override
     public void enterIfStatement(JavaParser.IfStatementContext ctx) {
         super.enterIfStatement(ctx);
-//        rewriter.insertBefore(ctx.start,"<pre>");
-//        System.out.println(ctx.parExpression().expression().getText());
         if (divNumbers[counter-1].equals("0")) {
             rewriter.insertBefore(ctx.start, "<pre style=\"background-color: red;\">");
         } else {
@@ -159,7 +157,7 @@ public class HTMLListener extends JavaParserBaseListener {
     public void enterMethodDeclaration(JavaParser.MethodDeclarationContext ctx) {
         super.enterMethodDeclaration(ctx);
         counter++;
-        if (divNumbers[counter-1].equals("0")) {
+        if (divNumbers[counter-1].equals("0") && !ctx.identifier().IDENTIFIER().getText().equals("main")) {
             rewriter.insertBefore(ctx.start, "<pre style=\"background-color: red;\">");
         } else {
             rewriter.insertBefore(ctx.start, "<pre>");
