@@ -15,7 +15,7 @@ public class Main {
             ParseTree tree = parser.compilationUnit();
             ParseTreeWalker walker = new ParseTreeWalker();
             TokenStreamRewriter rewriter = new TokenStreamRewriter(tokens);
-            walker.walk(new MyTaskListener(rewriter), tree);
+            walker.walk(new MyTaskListener(rewriter,i), tree);
 
             File output = new File("src/outputs/output"+i+".java");
             output.createNewFile();
@@ -23,5 +23,7 @@ public class Main {
             w.write(rewriter.getText());
             w.close();
         }
+        HTMLGen.main();
+
     }
 }
