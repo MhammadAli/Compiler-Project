@@ -2,13 +2,15 @@ import org.antlr.v4.runtime.TokenStreamRewriter;
 
 public class MyTaskListener extends JavaParserBaseListener {
     int counter;
+    int fileNumber;
     boolean isMain = false;
     int arrayCounter;
     TokenStreamRewriter rewriter;
 
-    public MyTaskListener(TokenStreamRewriter rewriter) {
+    public MyTaskListener(TokenStreamRewriter rewriter,int fileNumber) {
         this.rewriter = rewriter;
         this.counter = 0;
+        this.fileNumber = fileNumber;
     }
 
     @Override
@@ -95,9 +97,9 @@ public class MyTaskListener extends JavaParserBaseListener {
         super.enterMethodBody(ctx);
         if (isMain) {
             rewriter.insertBefore(ctx.getStart(), "throws Exception ");
-            rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "File output = new File(\"output.txt\");" + "\n");
+            rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "File output = new File(\"output"+fileNumber+".txt\");" + "\n");
             rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "output.createNewFile();" + "\n");
-            rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "FileWriter w = new FileWriter(\"output.txt\");" + "\n");
+            rewriter.insertAfter(ctx.getStart(), "\t" + "\t" + "FileWriter w = new FileWriter(\"output"+fileNumber+".txt\");" + "\n");
 
             rewriter.insertBefore(ctx.getStop(), "w.close();" + "\n");//the last
             rewriter.insertBefore(ctx.getStop(), "w.write(Arrays.toString(arr));" + "\n");
